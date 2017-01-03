@@ -42,7 +42,7 @@ preferredOrderFirst sources =
 -- in the list below.
 preferredOrder :: [String]
 preferredOrder = map (\f -> "src/Course" </> f <.> "hs") [
---      "List"
+      "List"
 --    , "Functor"
 --    , "Applicative"
 --    , "Monad"

@@ -76,7 +76,7 @@ headOr ::
   -> List a
   -> a
 headOr a Nil      = a
-headOr a (h :. _) = h
+headOr _ (h :. _) = h
   
 -- | The product of the elements of a list.
 --
@@ -143,7 +143,7 @@ filter ::
   (a -> Bool)
   -> List a
   -> List a
-filter pred = foldRight (\x acc -> if pred x then x :. acc else acc) Nil
+filter cond = foldRight (\x acc -> if cond x then x :. acc else acc) Nil
   
 -- | Append two lists to a new list.
 --
@@ -161,9 +161,8 @@ filter pred = foldRight (\x acc -> if pred x then x :. acc else acc) Nil
   List a
   -> List a
   -> List a
-(++) =
-  error "todo: Course.List#(++)"
-
+(++) xs ys = foldRight (:.) ys xs
+  
 infixr 5 ++
 
 -- | Flatten a list of lists to a list.
@@ -179,9 +178,8 @@ infixr 5 ++
 flatten ::
   List (List a)
   -> List a
-flatten =
-  error "todo: Course.List#flatten"
-
+flatten = foldRight (++) []
+  
 -- | Map a function then flatten to a list.
 --
 -- >>> flatMap (\x -> x :. x + 1 :. x + 2 :. Nil) (1 :. 2 :. 3 :. Nil)
@@ -196,9 +194,8 @@ flatMap ::
   (a -> List b)
   -> List a
   -> List b
-flatMap =
-  error "todo: Course.List#flatMap"
-
+flatMap f = flatten . map f 
+  
 -- | Flatten a list of lists to a list (again).
 -- HOWEVER, this time use the /flatMap/ function that you just wrote.
 --
@@ -206,9 +203,8 @@ flatMap =
 flattenAgain ::
   List (List a)
   -> List a
-flattenAgain =
-  error "todo: Course.List#flattenAgain"
-
+flattenAgain = flatMap id
+  
 -- | Convert a list of optional values to an optional list of values.
 --
 -- * If the list contains all `Full` values, 
@@ -234,9 +230,14 @@ flattenAgain =
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional =
-  error "todo: Course.List#seqOptional"
-
+seqOptional Nil             = Full Nil
+seqOptional (Empty :. _)    = Empty
+seqOptional ((Full x) :. t) = 
+  let res = seqOptional t in
+  case res of
+  | Empty -> Empty
+  | Full xs -> Full (x :. xs)
+  
 -- | Find the first element in the list matching the predicate.
 --
 -- >>> find even (1 :. 3 :. 5 :. Nil)
@@ -257,9 +258,10 @@ find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find =
-  error "todo: Course.List#find"
-
+find cond Nil = Empty
+find cond (h :. t) =
+  if cond h then Full h else find cond t
+  
 -- | Determine if the length of the given list is greater than 4.
 --
 -- >>> lengthGT4 (1 :. 3 :. 5 :. Nil)
@@ -276,9 +278,13 @@ find =
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
-
+lengthGT4 Nil = False
+lengthGT4 (_ :. Nil) = False
+lengthGT4 (_ :. _ :. Nil) = False
+lengthGT4 (_ :. _ :. _ :. Nil) = False
+lengthGT4 (_ :. _ :. _ :. _ :. Nil) = False
+lengthGT4 (_ :. _ :. _ :. _ :. _ :. _) = True
+  
 -- | Reverse a list.
 --
 -- >>> reverse Nil
@@ -293,8 +299,7 @@ lengthGT4 =
 reverse ::
   List a
   -> List a
-reverse =
-  error "todo: Course.List#reverse"
+reverse = foldLeft (\acc x -> x :. acc) Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -308,9 +313,8 @@ produce ::
   (a -> a)
   -> a
   -> List a
-produce =
-  error "todo: Course.List#produce"
-
+produce f a = a :. produce f (f a)
+  
 -- | Do anything other than reverse a list.
 -- Is it even possible?
 --
@@ -320,11 +324,14 @@ produce =
 -- prop> let types = x :: List Int in notReverse x ++ notReverse y == notReverse (y ++ x)
 --
 -- prop> let types = x :: Int in notReverse (x :. Nil) == x :. Nil
+replicate v Nil = Nil
+replicate v (_ :. t) = v :. replicate v t
+
 notReverse ::
   List a
   -> List a
-notReverse =
-  error "todo: Is it even possible?"
+notReverse Nil = Nil
+notReverse (h :. t) = h :. replicate h t
 
 ---- End of list exercises
 
