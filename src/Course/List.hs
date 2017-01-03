@@ -75,8 +75,7 @@ headOr ::
   a
   -> List a
   -> a
-headOr a Nil      = a
-headOr _ (h :. _) = h
+headOr = foldRight const
   
 -- | The product of the elements of a list.
 --
@@ -275,12 +274,9 @@ find cond (h :. t) =
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 Nil = False
-lengthGT4 (_ :. Nil) = False
-lengthGT4 (_ :. _ :. Nil) = False
-lengthGT4 (_ :. _ :. _ :. Nil) = False
-lengthGT4 (_ :. _ :. _ :. _ :. Nil) = False
 lengthGT4 (_ :. _ :. _ :. _ :. _ :. _) = True
+lengthGT4 _ = False
+
   
 -- | Reverse a list.
 --
