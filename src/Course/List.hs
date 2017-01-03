@@ -233,10 +233,7 @@ seqOptional ::
 seqOptional Nil             = Full Nil
 seqOptional (Empty :. _)    = Empty
 seqOptional ((Full x) :. t) = 
-  let res = seqOptional t in
-  case res of
-  | Empty -> Empty
-  | Full xs -> Full (x :. xs)
+  mapOptional (\xs -> x :. xs) (seqOptional t)
   
 -- | Find the first element in the list matching the predicate.
 --
