@@ -321,14 +321,11 @@ produce f a = a :. produce f (f a)
 -- prop> let types = x :: List Int in notReverse x ++ notReverse y == notReverse (y ++ x)
 --
 -- prop> let types = x :: Int in notReverse (x :. Nil) == x :. Nil
-duplicate v Nil = Nil
-duplicate v (_ :. t) = v :. duplicate v t
 
 notReverse ::
   List a
   -> List a
-notReverse Nil = Nil
-notReverse xs@(h :. _) = duplicate h xs
+notReverse = reverse
 
 ---- End of list exercises
 
