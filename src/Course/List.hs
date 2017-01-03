@@ -75,9 +75,9 @@ headOr ::
   a
   -> List a
   -> a
-headOr =
-  error "todo: Course.List#headOr"
-
+headOr a Nil      = a
+headOr a (h :. _) = h
+  
 -- | The product of the elements of a list.
 --
 -- >>> product (1 :. 2 :. 3 :. Nil)
@@ -88,9 +88,8 @@ headOr =
 product ::
   List Int
   -> Int
-product =
-  error "todo: Course.List#product"
-
+product = foldLeft (*) 1
+  
 -- | Sum the elements of the list.
 --
 -- >>> sum (1 :. 2 :. 3 :. Nil)
@@ -103,8 +102,7 @@ product =
 sum ::
   List Int
   -> Int
-sum =
-  error "todo: Course.List#sum"
+sum = foldLeft (+) 0
 
 -- | Return the length of the list.
 --
@@ -115,9 +113,8 @@ sum =
 length ::
   List a
   -> Int
-length =
-  error "todo: Course.List#length"
-
+length = foldLeft (\acc _ -> acc + 1) 0
+  
 -- | Map the given function on each element of the list.
 --
 -- >>> map (+10) (1 :. 2 :. 3 :. Nil)
@@ -130,9 +127,8 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map =
-  error "todo: Course.List#map"
-
+map f = foldRight (\x acc -> f x :. acc) Nil
+  
 -- | Return elements satisfying the given predicate.
 --
 -- >>> filter even (1 :. 2 :. 3 :. 4 :. 5 :. Nil)
@@ -147,9 +143,8 @@ filter ::
   (a -> Bool)
   -> List a
   -> List a
-filter =
-  error "todo: Course.List#filter"
-
+filter pred = foldRight (\x acc -> if pred x then x :. acc else acc) Nil
+  
 -- | Append two lists to a new list.
 --
 -- >>> (1 :. 2 :. 3 :. Nil) ++ (4 :. 5 :. 6 :. Nil)
