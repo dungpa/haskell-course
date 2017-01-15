@@ -254,7 +254,7 @@ find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find cond Nil = Empty
+find _ Nil = Empty
 find cond (h :. t) =
   if cond h then Full h else find cond t
   
